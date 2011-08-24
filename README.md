@@ -5,7 +5,8 @@ AttributeExt
 Copyright (C) 2011 Jan Graichen
 
 AttributeExt provides additional access control for rails model attributes.
-It contains two modules:
+It contains two modules one to protect attributes from mass assignment and one
+to hide attributes when serializing models.
 
 
 AttributeExt::HiddenAttributes
@@ -39,7 +40,7 @@ Also support Proc blocks.
 
 Examples:
 
-Never allow mass assignment for atribute.
+Never allow mass assignment for attribute.
 
 	class User < ActiveRecord::Base
 	  safe_attributes :attribute
