@@ -34,7 +34,7 @@ module AttributeExt
   
       self.class.hide_attributes.collect do |attrs, aopts|
         if (aopts[:if].nil? || aopts[:if].call(self, format, options)) &&    # if
-        (aopts[:unless].nil? || aopts[:unless].call(self, format, options)) # unless
+        (aopts[:unless].nil? || !aopts[:unless].call(self, format, options)) # unless
           names += attrs.collect(&:to_s)
         end
       end
