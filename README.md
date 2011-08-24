@@ -39,7 +39,14 @@ Also support Proc blocks.
 
 Examples:
 
-'login', 'admin' and 'status' can only be mass assigned if current is an admin.
+Never allow mass assignment for atribute.
+
+	class User < ActiveRecord::Base
+	  safe_attributes :attribute
+	end
+
+Attributes 'login', 'admin' and 'status' can only be mass assigned if current 
+user is an admin.
 
 	class User < ActiveRecord::Base
 	  safe_attributes :login, :admin, :status, :if => Proc.new { User.current.admin? }
