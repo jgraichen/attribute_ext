@@ -4,6 +4,7 @@ module AttributeExt
       base.extend(ClassMethods)
       base.alias_method_chain :to_xml, :hidden_attrs
       base.alias_method_chain :as_json, :hidden_attrs
+      base.alias_method_chain :serializable_hash, :hidden_attrs
     end
   
     module ClassMethods
@@ -30,8 +31,21 @@ module AttributeExt
       options ||= {}
       options[:except] = [] unless options[:except].is_a?(Array)
       options[:except] += hidden_attribute_names(:json, options)
-      
+      options[:hidden_attributes_json_export] = true
+            
       as_json_without_hidden_attrs(options)
+    end
+  
+    def serializable_hash_with_hidden_attrs(options = nil)
+      options ||= {}
+      options[:except] = [] unless options[:except].is_a?(Array)
+      if options[:hidden_attributes_json_export] == true
+        options[:except] += hidden_attribute_names(:json, options)
+      else
+        options[:except] += hidden_attribute_names(:hash, options)
+      end
+      
+      serializable_hash_without_hidden_attrs(options)
     end
   
     private
