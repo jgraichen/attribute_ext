@@ -39,7 +39,7 @@ module AttributeExt
     def serializable_hash_with_hidden_attrs(options = nil)
       options ||= {}
       options[:except] = [] unless options[:except].is_a?(Array)
-      if options[:hidden_attributes_json_export] == true
+      if options[:hidden_attributes_json_export]
         options[:except] += hidden_attribute_names(:json, options)
       else
         options[:except] += hidden_attribute_names(:hash, options)
@@ -53,9 +53,10 @@ module AttributeExt
     def hidden_attribute_names(format, options)
       names = []
   
-      self.class.hide_attributes.collect do |attrs, aopts|
-        if (aopts[:if].nil? || aopts[:if].call(self, format, options)) &&    # if
-        (aopts[:unless].nil? || !aopts[:unless].call(self, format, options)) # unless
+      self.class.hide_attributes.collect do |attrs, opts|
+        if (format != :hash or opts[:on_hash]) &&  # only apply rules on hashs when wanted
+            (opts[:if].nil? or opts[:if].call(self, format, options)) &&       # if block
+            (opts[:unless].nil? or !opts[:unless].call(self, format, options)) # unless block
           names += attrs.collect(&:to_s)
         end
       end
