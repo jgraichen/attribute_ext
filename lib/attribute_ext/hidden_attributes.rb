@@ -3,7 +3,7 @@ module AttributeExt
     def self.included(base)
       base.extend(ClassMethods)
       base.alias_method_chain :to_xml, :hidden_attrs
-      base.alias_method_chain :to_json, :hidden_attrs
+      base.alias_method_chain :as_json, :hidden_attrs
     end
   
     module ClassMethods
@@ -19,17 +19,24 @@ module AttributeExt
     end
   
     def to_xml_with_hidden_attrs(options = nil, &block)
-      call_with_sanitized_attrs(:xml, options, &block)
+      options ||= {}
+      options[:except] = [] unless options[:except].is_a?(Array)
+      options[:except] += hidden_attribute_names(:xml, options)
+      
+      to_xml_without_hidden_attrs(options)
     end
   
-    def to_json_with_hidden_attrs(options = nil)
-      call_with_sanitized_attrs(:json, options)
+    def as_json_with_hidden_attrs(options = nil, &block)
+      options ||= {}
+      options[:except] = [] unless options[:except].is_a?(Array)
+      options[:except] += hidden_attribute_names(:json, options)
+      
+      as_json_without_hidden_attrs(options)
     end
   
     private
-  
-    def call_with_sanitized_attrs(format, options = nil, &block)
-      options ||= {}
+    
+    def hidden_attribute_names(format, options)
       names = []
   
       self.class.hide_attributes.collect do |attrs, aopts|
@@ -39,8 +46,6 @@ module AttributeExt
         end
       end
       names.uniq
-  
-      send("to_#{format}_without_hidden_attrs".to_sym, {:except => names}.merge(options), &block)
     end
   end
 end
