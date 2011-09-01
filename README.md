@@ -19,6 +19,10 @@ serializing to hash via serializable_hash method too.
 But by default rules will not be checked on serializable_hash, you have to 
 add `:on_hash => true` to hide_attributes to enabled it for this rule.
 
+Update: SafeAttributes works now with Rails 3.1 mass_assignment_authorizer that 
+provides a role and pass this role to if and unless blocks as second
+parameter. Not tested but should also work with old mass_assignment_authorizer.
+
 
 AttributeExt::HiddenAttributes
 ------------------------------
