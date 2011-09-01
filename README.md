@@ -31,6 +31,11 @@ show his email.
 	  hide_attributes :email, :if => Proc.new { |user| user.hide_email? }
 	end
 
+Node:
+`hide_attributes` does not work on included models when serializing to json.
+
+	render :json, @event, :include => [:user]
+
 
 AttributeExt::SafeAttributes
 ----------------------------
