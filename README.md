@@ -14,7 +14,7 @@ Changelog
 Sep 1, 2011
 
 HiddenAttributes works on included model when serializing to json by hooking 
-into serializable_hash. Therefore it is possible to hide attributes when
+into serializable_hash now. Therefore it is possible to hide attributes when
 serializing to hash via serializable_hash method too. 
 But by default rules will not be checked on serializable_hash, you have to 
 add `:on_hash => true` to hide_attributes to enabled it for this rule.
