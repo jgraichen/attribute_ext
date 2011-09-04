@@ -19,12 +19,23 @@ module AttributeExt
     def safe_attribute_names(role = :default)
       names = []
       self.class.safe_attributes.collect do |attrs, options|
-        if (options[:if].nil? || options[:if].call(self, role)) &&        # if
-            (options[:unless].nil? || !options[:unless].call(self, role)) # unless
+        if (options[:if].nil? || call_block(options[:if], role)) &&        # if
+            (options[:unless].nil? || !call_block(options[:unless], role)) # unless
           names += attrs.collect(&:to_s)
         end
       end
       names.uniq
+    end
+    
+    def call_block(block, role)
+      case block.arity
+      when 0
+        return block.call
+      when 1
+        return block.call(self)
+      else
+        return block.call(self, role)
+      end
     end
 
     def mass_assignment_authorizer(role = nil)
