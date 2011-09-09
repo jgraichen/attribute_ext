@@ -55,15 +55,15 @@ module AttributeExt
   
       self.class.hide_attributes.collect do |attrs, opts|
         if (format != :hash or opts[:on_hash]) &&  # only apply rules on hashs when wanted
-            (opts[:if].nil? or call_block(opts[:if], format, options)) &&       # if block
-            (opts[:unless].nil? or !call_block(opts[:unless], format, options)) # unless block
+            (opts[:if].nil? or hidden_attr_call_block(opts[:if], format, options)) &&       # if block
+            (opts[:unless].nil? or !hidden_attr_call_block(opts[:unless], format, options)) # unless block
           names += attrs.collect(&:to_s)
         end
       end
       names.uniq
     end
     
-    def call_block(block, format, opts)
+    def hidden_attr_call_block(block, format, opts)
       case block.arity
       when 0
         return block.call
