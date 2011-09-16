@@ -2,8 +2,6 @@
 AttributeExt
 ============
 
-Copyright (C) 2011 Jan Graichen
-
 AttributeExt provides additional access control for rails model attributes.
 It contains two modules one to protect attributes from mass assignment and one
 to hide attributes when serializing models.
@@ -14,6 +12,8 @@ Install
 Just add the following to your Gemfile
 
 	gem 'attribute_ext'
+	
+and run `bundle` command.
 
 You can also install AttributeExt as a rails plugin by cloning the repository to
 `vendor/plugins`.
@@ -104,6 +104,8 @@ Message text can not be mass assigned when post is locked.
   
 License
 -------
+
+Copyright (C) 2011 Jan Graichen
 
 AttributeExt is licensed under the Apache License, Version 2.0. 
 See LICENSE for more information.
