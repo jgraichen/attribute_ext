@@ -83,7 +83,7 @@ Also support Proc blocks.
 
 Examples:
 
-Never allow mass assignment for attribute.
+Always allow mass assignment for attribute.
 
 	class User < ActiveRecord::Base
 	  safe_attributes :attribute
