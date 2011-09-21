@@ -16,6 +16,14 @@ module AttributeExt
       end
     end
 
+    def mass_assignment_authorizer(role = nil)
+      if role.nil?
+        super + safe_attribute_names(:default)
+      else
+        super(role) + safe_attribute_names(role)
+      end
+    end
+
     def safe_attribute_names(role = :default)
       names = []
       self.class.safe_attributes.collect do |attrs, options|
@@ -27,6 +35,7 @@ module AttributeExt
       names.uniq
     end
     
+    private
     def safe_attrs_call_block(block, role)
       case block.arity
       when 0
@@ -35,14 +44,6 @@ module AttributeExt
         return block.call(self)
       else
         return block.call(self, role)
-      end
-    end
-
-    def mass_assignment_authorizer(role = nil)
-      if role.nil?
-        super + safe_attribute_names(:default)
-      else
-        super(role) + safe_attribute_names(role)
       end
     end
   end

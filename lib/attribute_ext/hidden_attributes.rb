@@ -14,8 +14,19 @@ module AttributeExt
           @hidden_attributes
         else
           options = attrs.last.is_a?(Hash) ? attrs.pop : {}
-          @hidden_attributes << [attrs, options]
+          @hidden_attributes << [attrs, hide_attributes_opts(options)]
         end
+      end
+      
+      private
+      def hide_attributes_opts(options)
+        opts = {}
+        opts[:except] = [:hash] unless options[:on_hash]
+        opts[:except] = options[:except].to_a unless options[:except].nil?
+        opts[:only]   = options[:only].to_a
+        opts[:if]     = options[:if] if options[:if].is_a?(Proc)
+        opts[:unless] = options[:unless] if options[:unless].is_a?(Proc)
+        opts
       end
     end
   
@@ -47,22 +58,22 @@ module AttributeExt
       
       serializable_hash_without_hidden_attrs(options)
     end
-  
-    private
     
-    def hidden_attribute_names(format, options)
+    def hidden_attribute_names(format, options = {})
       names = []
   
       self.class.hide_attributes.collect do |attrs, opts|
-        if (format != :hash or opts[:on_hash]) &&  # only apply rules on hashs when wanted
-            (opts[:if].nil? or hidden_attr_call_block(opts[:if], format, options)) &&       # if block
-            (opts[:unless].nil? or !hidden_attr_call_block(opts[:unless], format, options)) # unless block
-          names += attrs.collect(&:to_s)
-        end
+        next unless opts[:only].empty? or opts[:only].include?(format)
+        next unless opts[:except].empty? or !opts[:except].include?(format)
+        next unless opts[:if].nil? or hidden_attr_call_block(opts[:if], format, options)
+        next unless opts[:unless].nil? or !hidden_attr_call_block(opts[:unless], format, options)
+        
+        names += attrs.collect(&:to_s)
       end
       names.uniq
     end
-    
+  
+    private
     def hidden_attr_call_block(block, format, opts)
       case block.arity
       when 0
