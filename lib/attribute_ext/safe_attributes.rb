@@ -29,7 +29,6 @@ module AttributeExt
     def mass_assignment_authorizer_with_safe_attrs(role = nil)
       attrs = role.nil? ? mass_assignment_authorizer_without_safe_attrs : mass_assignment_authorizer_without_safe_attrs(role)
       attrs += safe_attribute_names(role ? role : :default)
-      attrs.uniq
     end
 
     def safe_attribute_names(role = :default)
