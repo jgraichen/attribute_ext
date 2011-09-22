@@ -45,6 +45,19 @@ Message text can not be mass assigned when post is locked.
 	class Message < ActiveRecord::Base
 	  safe_attributes :text, :unless => Proc.new { |msg| msg.locked? }
 	end
+	
+With Rails 3 a role can be given when creating or updating an model. This 
+role will also be available in SafeAttributes.
+
+	class User < ActiveRecord::Base
+	  safe_attributes :login, :as => :admin
+	end
+	
+or
+
+	class User < ActiveRecord::Base
+	  safe_attributes :login, :if => Proc.new { |user,role| role == :admin }
+	end
 
 
 AttributeExt::HiddenAttributes
@@ -96,7 +109,7 @@ apply when calling serializable_hash.
 	  hide_attributes :user_id, :on_hash => true, :if => Proc.new { |event, format, opts| opts[:include].include?(:user) }
 	end
 
-By default rules does not apply when serializing to hash.
+By default rules *does not* apply when serializing to hash.
 
 
 Changelog
