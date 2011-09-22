@@ -17,8 +17,8 @@ module ActiveRecord
       options
     end
     
-    def mass_assignment_authorizer
-      [:always_there]
+    def mass_assignment_authorizer(role = :default)
+      ['always_there', "role=#{role}"]
     end
     
     def self.alias_method_chain(target, feature)

@@ -41,6 +41,20 @@ class User < ActiveRecord::Base
   hide_attributes :attribute_only_xml_txt, :only => [:xml, :txt]
   hide_attributes :attribute_except_xml_txt, :except => [:xml, :txt]
   
+  safe_attributes :always
+  safe_attributes :admin_role, :as => :admin
+  safe_attributes :attribute_if, 
+    :if => Proc.new { |user| user.opts[:if] }
+  safe_attributes :attribute_unless, 
+    :unless => Proc.new { |user| user.opts[:unless] }
+  safe_attributes :attribute_if_unless, 
+    :if => Proc.new { |user| user.opts[:if] }, 
+    :unless => Proc.new { |user| user.opts[:unless] }
+  safe_attributes :attribute_if_admin,
+    :if => Proc.new { |user,role| role == :admin}
+  safe_attributes :attribute_unless_admin,
+    :unless => Proc.new { |user,role| role == :admin}
+  
   def initialize(opts = {})
     @opts = {
       :if => false,
