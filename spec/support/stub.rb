@@ -31,6 +31,15 @@ class User < ActiveRecord::Base
   
   hide_attributes :attribute_unless_opts, 
     :unless => Proc.new { |u,format,opts| opts[:hide] == false }
+    
+  hide_attributes :attribute_only_xml, :only => :xml
+  hide_attributes :attribute_only_json, :only => :json
+  hide_attributes :attribute_only_hash, :only => :hash
+  hide_attributes :attribute_except_xml, :except => :xml
+  hide_attributes :attribute_except_json, :except => :json
+  hide_attributes :attribute_except_hash, :except => :hash
+  hide_attributes :attribute_only_xml_txt, :only => [:xml, :txt]
+  hide_attributes :attribute_except_xml_txt, :except => [:xml, :txt]
   
   def initialize(opts = {})
     @opts = {

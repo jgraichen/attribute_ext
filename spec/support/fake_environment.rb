@@ -2,7 +2,11 @@
 module ActiveRecord
   class Base
     def as_json(options)
-      options
+      if options[:include]
+        serializable_hash(options)
+      else
+        options
+      end
     end
     
     def to_xml(options)

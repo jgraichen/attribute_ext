@@ -1,5 +1,5 @@
 
-require 'spec_helper'
+require File.dirname(__FILE__) + '/spec_helper'
 
 describe AttributeExt::HiddenAttributes do
   
@@ -79,5 +79,73 @@ describe AttributeExt::HiddenAttributes do
     user = User.new :unless => false
     user.hidden_attribute_names(:hash).should_not include('attribute_unless')
     user.hidden_attribute_names(:hash).should include('attribute_unless_hash')
+  end
+  
+  it 'only applies rules to given format (only option)' do
+    formats = [:json, :hash, :xml]
+    user = User.new
+    
+    formats.each do |f|
+      formats.each do |f2|
+        if f == f2
+          user.hidden_attribute_names(f).should include("attribute_only_#{f2}")
+        else
+          user.hidden_attribute_names(f).should_not include("attribute_only_#{f2}")
+        end
+      end
+    end
+  end
+  
+  it 'only applies rules to given format (except option)' do
+    formats = [:json, :xml, :hash]
+    user = User.new
+    
+    formats.each do |f|
+      formats.each do |f2|
+        if f == f2
+          user.hidden_attribute_names(f).should_not include("attribute_except_#{f2}")
+        else
+          user.hidden_attribute_names(f).should include("attribute_except_#{f2}")
+        end
+      end
+    end
+  end
+  
+  it 'only applies rules to given formats (only option)' do
+    user = User.new
+    
+    user.hidden_attribute_names(:json).should_not include("attribute_only_xml_txt")
+    user.hidden_attribute_names(:hash).should_not include("attribute_only_xml_txt")
+    user.hidden_attribute_names(:xml).should include("attribute_only_xml_txt")
+    user.hidden_attribute_names(:txt).should include("attribute_only_xml_txt")
+  end
+  
+  it 'only applies rules to given formats (except option)' do
+    user = User.new
+    
+    user.hidden_attribute_names(:json).should include("attribute_except_xml_txt")
+    user.hidden_attribute_names(:hash).should include("attribute_except_xml_txt")
+    user.hidden_attribute_names(:xml).should_not include("attribute_except_xml_txt")
+    user.hidden_attribute_names(:txt).should_not include("attribute_except_xml_txt")
+  end
+  
+  it 'supports json export' do
+    user = User.new
+    user.hidden_attribute_names(:json).should == user.as_json[:except]
+  end
+  
+  it 'supports deep json export via serializable hash (depends on rails)' do
+    user = User.new
+    user.hidden_attribute_names(:json).should == user.as_json({:include => true})[:except]
+  end
+  
+  it 'supports xml export' do
+    user = User.new
+    user.hidden_attribute_names(:xml).should == user.to_xml[:except]
+  end
+  
+  it 'supports hash export' do
+    user = User.new
+    user.hidden_attribute_names(:hash).should == user.serializable_hash[:except]
   end
 end

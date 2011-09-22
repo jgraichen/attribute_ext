@@ -20,47 +20,49 @@ module AttributeExt
       
       private
       def hide_attributes_opts(options)
-        opts = {}
-        opts[:except] = [:hash] unless options[:on_hash]
-        opts[:except] = options[:except].to_a unless options[:except].nil?
-        opts[:only]   = options[:only].to_a
+        opts = { :except => [], :only => [] }
+        opts[:except] += options[:except].is_a?(Array) ? options[:except] : [options[:except]] if options[:except]
+        opts[:only]   += options[:only].is_a?(Array)   ? options[:only]   : [options[:only]]   if options[:only]
         opts[:if]     = options[:if] if options[:if].is_a?(Proc)
         opts[:unless] = options[:unless] if options[:unless].is_a?(Proc)
+        
+        if opts[:except].empty? && opts[:only].empty?
+          opts[:except] += [:hash] unless options[:on_hash]
+        end
+        
         opts
       end
     end
   
     def to_xml_with_hidden_attrs(options = nil, &block)
       options ||= {}
-      options[:except] = [] unless options[:except].is_a?(Array)
-      options[:except] += hidden_attribute_names(:xml, options)
+      options[:except] = hidden_attribute_names(:xml, options)
       
       to_xml_without_hidden_attrs(options)
     end
   
     def as_json_with_hidden_attrs(options = nil, &block)
       options ||= {}
-      options[:except] = [] unless options[:except].is_a?(Array)
-      options[:except] += hidden_attribute_names(:json, options)
-      options[:hidden_attributes_json_export] = true
+      options[:except] = hidden_attribute_names(:json, options)
+      options[:hidden_attributes_format] = :json
             
       as_json_without_hidden_attrs(options)
     end
   
     def serializable_hash_with_hidden_attrs(options = nil)
       options ||= {}
-      options[:except] = [] unless options[:except].is_a?(Array)
-      if options[:hidden_attributes_json_export]
-        options[:except] += hidden_attribute_names(:json, options)
-      else
-        options[:except] += hidden_attribute_names(:hash, options)
-      end
+      options[:except] = hidden_attribute_names((options[:hidden_attributes_format] || :hash), options)
       
       serializable_hash_without_hidden_attrs(options)
     end
     
     def hidden_attribute_names(format, options = {})
-      names = []
+      if options[:except].is_a?(Array)
+        names = options[:except]
+      else
+        names = []
+        names += options[:except] if options[:except]
+      end
   
       self.class.hide_attributes.collect do |attrs, opts|
         next unless opts[:only].empty? or opts[:only].include?(format)
