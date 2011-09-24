@@ -42,11 +42,12 @@ module AttributeExt
   
       def mass_assignment_authorizer_with_safe_attrs(role = nil)
         if role.nil? 
-          attrs = mass_assignment_authorizer_without_safe_attrs
+          attrs = mass_assignment_authorizer_without_safe_attrs +
+            safe_attribute_names
         else
-          attrs = mass_assignment_authorizer_without_safe_attrs(role)
+          attrs = mass_assignment_authorizer_without_safe_attrs(role) +
+            safe_attribute_names(role)
         end
-        attrs += safe_attribute_names(mass_assignment_authorizer_role(role))
       end
       
       def mass_assignment_authorizer_role(role = nil)
@@ -55,7 +56,9 @@ module AttributeExt
         role
       end
   
-      def safe_attribute_names(role = :default)
+      def safe_attribute_names(role = nil)
+        role = mass_assignment_authorizer_role(role)
+        
         names = []
         self.class.safe_attributes.collect do |attrs, options|
           next unless options[:as].empty? or options[:as].include?(role)
