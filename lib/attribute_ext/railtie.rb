@@ -1,10 +1,9 @@
 
 module AttributeExt
-  class Railtie < Rails::Railtie
+  class Railtie < Rails::Railtie # :nodoc:
     initializer 'attribute_ext' do |app|
       ActiveSupport.on_load :active_record do
-        ActiveRecord::Base.send :include, AttributeExt::HiddenAttributes
-        ActiveRecord::Base.send :include, AttributeExt::SafeAttributes::ModelPatch
+        AttributeExt.setup
       end
     end
   end
