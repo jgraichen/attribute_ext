@@ -153,6 +153,12 @@ By default rules *do not* apply when serializing to hash.
 Changelog
 ---------
 
+Sep 24, 2011
+
+SafeAttributes provides methods to change default role and to map roles to 
+specific values before processing rules. Also added full documentation to 
+all public methods and methods that are usefull for testing own rules.
+
 Sep 22, 2011
 
 Nearly all features are successfully tested using a fake environment now.
