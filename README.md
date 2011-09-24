@@ -58,6 +58,44 @@ or
 	class User < ActiveRecord::Base
 	  safe_attributes :login, :if => Proc.new { |user,role| role == :admin }
 	end
+	
+Default role and role mapper:
+
+SafeAttributes provides helper for handling roles including a method to set
+a new default role as well as a method to map roles to other values. Changes to
+role will only affect SafeAttributes and will not be given to Rails 3.1 mass
+assignment authorizer.
+
+Set default role that will be used if given role is nil or :default.
+
+	AttributeExt::SafeAttributes.default_role = :new_default
+	
+Role values can be restricted to specific values using the role mapper.
+
+	AttributeExt::SafeAttributes.role_mapper = Proc.new do |role|
+	  [:guest, :user, :admin].include?(role) ? role : :guest
+	end
+	
+or
+
+	AttributeExt::SafeAttributes.role_mapper do |role|
+	  [:guest, :user, :admin].include?(role) ? role : :guest
+	end
+
+The role mapper is especially usefull if you want the current user model be the
+default role.
+
+	AttributeExt::SafeAttributes.role_mapper do |role|
+	  role.is_a?(User) ? role : User.current
+	end
+	
+You can perform checks like this now:
+
+	class User < ActiveRecord::Base
+	  safe_attribute :email, :if => Proc.new { |user,role| user == role or role.admin? }
+	end
+	
+Now the user can edit there own emails or everyons email if it is an admin.
 
 
 AttributeExt::HiddenAttributes

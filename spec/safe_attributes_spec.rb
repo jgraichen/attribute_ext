@@ -62,4 +62,43 @@ describe AttributeExt::HiddenAttributes do
     user = User.new
     user.mass_assignment_authorizer(:admin).should_not include('attribute_unless_admin')
   end
+  
+  it 'can provide a global default role' do
+    AttributeExt::SafeAttributes.default_role = :new_default
+    AttributeExt::SafeAttributes.default_role.should == :new_default
+    User.new.mass_assignment_authorizer.should include("new_default")
+  end
+  
+  context '#role_mapper' do
+    it 'is nil by default' do
+      AttributeExt::SafeAttributes.role_mapper.should be_nil
+    end
+    
+    it 'accept Procs' do
+      proc = Proc.new { |role| role }
+      AttributeExt::SafeAttributes.role_mapper = proc
+      AttributeExt::SafeAttributes.role_mapper.should equal(proc)
+    end
+    
+    it 'accept nil' do
+      AttributeExt::SafeAttributes.role_mapper = nil
+      AttributeExt::SafeAttributes.role_mapper.should be_nil
+    end
+    
+    it 'accept blocks' do
+      AttributeExt::SafeAttributes.role_mapper { |role| role }
+      AttributeExt::SafeAttributes.role_mapper.should be_an Proc
+    end
+  
+    it 'maps role according to given Proc' do
+      AttributeExt::SafeAttributes.role_mapper = Proc.new do |role|
+        [:guest, :user, :admin].include?(role) ? role : :guest
+      end
+      
+      User.new.mass_assignment_authorizer_role.should == :guest
+      User.new.mass_assignment_authorizer_role(:user).should == :user
+      User.new.mass_assignment_authorizer_role(:admin).should == :admin
+      User.new.mass_assignment_authorizer_role(:heinz).should == :guest
+    end
+  end
 end
