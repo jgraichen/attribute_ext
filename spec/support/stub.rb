@@ -55,6 +55,9 @@ class User < ActiveRecord::Base
   safe_attributes :attribute_unless_admin,
     :unless => Proc.new { |user,role| role == :admin}
   safe_attributes :new_default, :as => :new_default
+  safe_attributes :role_mapper_guest, :if => Proc.new { |user,role| role == :guest }
+  safe_attributes :role_mapper_user, :as => :user
+  safe_attributes :role_mapper_admin, :if => Proc.new { |user,role| role == :admin }
   
   def initialize(opts = {})
     @opts = {

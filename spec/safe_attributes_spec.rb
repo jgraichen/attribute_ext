@@ -100,5 +100,23 @@ describe AttributeExt::HiddenAttributes do
       User.new.mass_assignment_authorizer_role(:admin).should == :admin
       User.new.mass_assignment_authorizer_role(:heinz).should == :guest
     end
+    
+    it 'gives role to rules' do
+      AttributeExt::SafeAttributes.role_mapper = Proc.new do |role|
+        [:guest, :user, :admin].include?(role) ? role : :guest
+      end
+      
+      User.new.mass_assignment_authorizer.should include('role_mapper_guest')
+      User.new.mass_assignment_authorizer.should_not include('role_mapper_user')
+      User.new.mass_assignment_authorizer.should_not include('role_mapper_admin')
+      
+      User.new.mass_assignment_authorizer(:user).should_not include('role_mapper_guest')
+      User.new.mass_assignment_authorizer(:user).should include('role_mapper_user')
+      User.new.mass_assignment_authorizer(:user).should_not include('role_mapper_admin')
+      
+      User.new.mass_assignment_authorizer(:admin).should_not include('role_mapper_guest')
+      User.new.mass_assignment_authorizer(:admin).should_not include('role_mapper_user')
+      User.new.mass_assignment_authorizer(:admin).should include('role_mapper_admin')
+    end
   end
 end
