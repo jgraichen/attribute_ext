@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "attribute_ext"
-  s.version     = "1.2.2"
+  s.version     = "1.2.3"
   s.authors     = ["Jan Graichen"]
   s.email       = ["jan.graichen@altimos.de"]
   s.homepage    = "https://github.com/jgraichen/attribute_ext"

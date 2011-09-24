@@ -50,14 +50,14 @@ module AttributeExt
         end
       end
       
-      def mass_assignment_authorizer_role(role = nil)
+      def safe_attributes_role(role = nil)
         return AttributeExt::SafeAttributes.role_mapper.call(role) unless AttributeExt::SafeAttributes.role_mapper.nil?
         return AttributeExt::SafeAttributes.default_role if role.nil? or role == :default
         role
       end
   
       def safe_attribute_names(role = nil)
-        role = mass_assignment_authorizer_role(role)
+        role = safe_attributes_role(role)
         
         names = []
         self.class.safe_attributes.collect do |attrs, options|

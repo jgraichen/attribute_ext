@@ -95,10 +95,10 @@ describe AttributeExt::HiddenAttributes do
         [:guest, :user, :admin].include?(role) ? role : :guest
       end
       
-      User.new.mass_assignment_authorizer_role.should == :guest
-      User.new.mass_assignment_authorizer_role(:user).should == :user
-      User.new.mass_assignment_authorizer_role(:admin).should == :admin
-      User.new.mass_assignment_authorizer_role(:heinz).should == :guest
+      User.new.safe_attributes_role.should == :guest
+      User.new.safe_attributes_role(:user).should == :user
+      User.new.safe_attributes_role(:admin).should == :admin
+      User.new.safe_attributes_role(:heinz).should == :guest
     end
     
     it 'gives role to rules' do
