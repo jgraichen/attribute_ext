@@ -150,34 +150,26 @@ apply when calling serializable_hash.
 By default rules *do not* apply when serializing to hash.
 
 
-Changelog
----------
+Using SafeAttributes with RSpec
+-------------------------------
 
-Sep 24, 2011
+AttributeExt provides a RSpec matcher that can be used to test own safe attributes rules.
 
-SafeAttributes provides methods to change default role and to map roles to 
-specific values before processing rules. Also added full documentation to 
-all public methods and methods that are usefull for testing own rules.
+Add
+	
+	require 'attribute_ext/rspec'
+	
+to your `spec_helper.rb` and use it like this:
 
-Sep 22, 2011
+	model.should have_no_safe_attributes.as(:guest, 'Guest').and_as(:blocked_user, 'Blocked User')
+	model.should have_safe_attributes(:name, :message)
+	model.should have_safe_attributes(:attribute).as(:admin, 'Admin')
+	
+The matcher will generate well formatted description when running RSpec with `-fd`:
 
-Nearly all features are successfully tested using a fake environment now.
-SafeAttributes provides a new quick role validation using the :as parameters and
-HiddenAttributes can apply rules only to specific formats via :only and :except 
-parameters.
-
-Sep 1, 2011
-
-HiddenAttributes works on included model when serializing to json by hooking 
-into serializable_hash now. Therefore it is possible to hide attributes when
-serializing to hash via serializable_hash method too. 
-But by default rules will not be checked on serializable_hash, you have to 
-add `:on_hash => true` to hide_attributes to enabled it for this rule.
-
-Update: SafeAttributes works now with Rails 3.1 mass_assignment_authorizer that 
-provides a role and pass this role to if and unless blocks as second
-parameter. Not tested but should also work with old mass_assignment_authorizer.
-
+	should have no safe attributes as Guest and as Blocked User
+	should have safe attributes name, message as default
+	should have safe attributes attribute as Admin
 
 License
 -------
