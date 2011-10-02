@@ -165,7 +165,7 @@ to your `spec_helper.rb` and use it like this:
 	model.should have_safe_attributes(:name, :message)
 	model.should have_safe_attributes(:attribute).as(:admin, 'Admin')
 	
-The matcher will generate well formatted description when running RSpec with `-fd`:
+The matcher will generate well formatted descriptions when running RSpec with `-fd`:
 
 	should have no safe attributes as Guest and as Blocked User
 	should have safe attributes name, message as default
