@@ -95,7 +95,7 @@ You can perform checks like this now:
 	  safe_attribute :email, :if => Proc.new { |user,role| user == role or role.admin? }
 	end
 	
-Now the user can edit there own emails or everyons email if it is an admin.
+Now a user can edit his own emails or all email if he is an admin.
 
 
 AttributeExt::HiddenAttributes
