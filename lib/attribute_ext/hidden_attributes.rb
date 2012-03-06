@@ -70,6 +70,7 @@ module AttributeExt
     def to_xml_with_hidden_attrs(options = nil, &block) # :nodoc:
       options ||= {}
       options[:except] = hidden_attribute_names(:xml, options)
+      options[:hidden_attributes_format] = :xml
       
       to_xml_without_hidden_attrs(options)
     end
@@ -85,7 +86,7 @@ module AttributeExt
     def serializable_hash_with_hidden_attrs(options = nil) # :nodoc:
       options ||= {}
       options[:except] = hidden_attribute_names((options[:hidden_attributes_format] || :hash), options)
-      
+
       serializable_hash_without_hidden_attrs(options)
     end
     
@@ -101,7 +102,7 @@ module AttributeExt
         names = options[:except]
       else
         names = []
-        names += options[:except] if options[:except]
+        names << options[:except] if options[:except]
       end
   
       self.class.hide_attributes.collect do |attrs, opts|

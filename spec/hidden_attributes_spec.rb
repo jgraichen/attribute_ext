@@ -13,7 +13,7 @@ describe AttributeExt::HiddenAttributes do
     user = User.new
     user.hidden_attribute_names(:format).should_not include('attribute_if')
     
-    user = User.new :if => true
+    user = User.new :opts => { :if => true }
     user.hidden_attribute_names(:format).should include('attribute_if')
   end
   
@@ -21,7 +21,7 @@ describe AttributeExt::HiddenAttributes do
     user = User.new
     user.hidden_attribute_names(:format).should_not include('attribute_unless')
     
-    user = User.new :unless => false
+    user = User.new :opts => { :unless => false }
     user.hidden_attribute_names(:format).should include('attribute_unless')
   end
   
@@ -29,13 +29,13 @@ describe AttributeExt::HiddenAttributes do
     user = User.new
     user.hidden_attribute_names(:format).should_not include('attribute_if_unless')
     
-    user = User.new :if => true
+    user = User.new :opts => { :if => true }
     user.hidden_attribute_names(:format).should_not include('attribute_if_unless')
     
-    user = User.new :unless => false
+    user = User.new :opts => { :unless => false }
     user.hidden_attribute_names(:format).should_not include('attribute_if_unless')
     
-    user = User.new :unless => false, :if => true
+    user = User.new :opts => { :unless => false, :if => true }
     user.hidden_attribute_names(:format).should include('attribute_if_unless')
   end
   
@@ -70,13 +70,13 @@ describe AttributeExt::HiddenAttributes do
   end
   
   it 'only applies rules to hash if wanted (if condition)' do
-    user = User.new :if => true
+    user = User.new :opts => { :if => true }
     user.hidden_attribute_names(:hash).should_not include('attribute_if')
     user.hidden_attribute_names(:hash).should include('attribute_if_hash')
   end
   
   it 'only applies rules to hash if wanted (unless condition)' do
-    user = User.new :unless => false
+    user = User.new :opts => { :unless => false }
     user.hidden_attribute_names(:hash).should_not include('attribute_unless')
     user.hidden_attribute_names(:hash).should include('attribute_unless_hash')
   end
@@ -131,21 +131,71 @@ describe AttributeExt::HiddenAttributes do
   
   it 'supports json export' do
     user = User.new
-    user.hidden_attribute_names(:json).should == user.as_json[:except]
+    user.to_json.should == {
+      "attribute_except_json" => nil,
+      "attribute_if" => nil,
+      "attribute_if_format" => nil,
+      "attribute_if_hash" => nil,
+      "attribute_if_opts" => nil,
+      "attribute_if_unless" => nil,
+      "attribute_only_hash" => nil,
+      "attribute_only_xml" => nil,
+      "attribute_only_xml_txt" => nil,
+      "attribute_unless" => nil,
+      "attribute_unless_hash" => nil
+    }.to_json
   end
   
   it 'supports deep json export via serializable hash (depends on rails)' do
     user = User.new
-    user.hidden_attribute_names(:json).should == user.as_json({:include => true})[:except]
+    user.as_json.should == {
+      "attribute_except_json" => nil,
+      "attribute_if" => nil,
+      "attribute_if_format" => nil,
+      "attribute_if_hash" => nil,
+      "attribute_if_opts" => nil,
+      "attribute_if_unless" => nil,
+      "attribute_only_hash" => nil,
+      "attribute_only_xml" => nil,
+      "attribute_only_xml_txt" => nil,
+      "attribute_unless" => nil,
+      "attribute_unless_hash" => nil
+    }
   end
   
   it 'supports xml export' do
     user = User.new
-    user.hidden_attribute_names(:xml).should == user.to_xml[:except]
+    user.to_xml.should == {
+      "attribute_except_xml" => nil,
+      "attribute_except_xml_txt" => nil,
+      "attribute_if" => nil,
+      "attribute_if_format" => nil,
+      "attribute_if_hash" => nil,
+      "attribute_if_opts" => nil,
+      "attribute_if_unless" => nil,
+      "attribute_only_hash" => nil,
+      "attribute_only_json" => nil,
+      "attribute_unless" => nil,
+      "attribute_unless_hash" => nil
+    }.to_xml(:root => :user)
   end
   
   it 'supports hash export' do
     user = User.new
-    user.hidden_attribute_names(:hash).should == user.serializable_hash[:except]
+    user.serializable_hash.should == {
+      "attribute_except_hash" => nil,
+      "attribute_if" => nil,
+      "attribute_if_format" => nil,
+      "attribute_if_hash" => nil,
+      "attribute_if_opts" => nil,
+      "attribute_if_unless" => nil,
+      "attribute_only_json" => nil,
+      "attribute_only_xml" => nil,
+      "attribute_only_xml_txt" => nil,
+      "attribute_unless" => nil,
+      "attribute_unless_format" => nil,
+      "attribute_unless_opts" => nil,
+      "attribute_unless_hash" => nil,
+    }
   end
 end

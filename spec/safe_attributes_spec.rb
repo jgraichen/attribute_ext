@@ -1,7 +1,7 @@
 
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe AttributeExt::HiddenAttributes do
+describe AttributeExt::SafeAttributes do
   
   it 'uses mass assignment authorizer' do
     user = User.new
@@ -25,7 +25,7 @@ describe AttributeExt::HiddenAttributes do
     user = User.new
     user.mass_assignment_authorizer.should_not include('attribute_if')
     
-    user = User.new :if => true
+    user = User.new :opts => { :if => true }
     user.mass_assignment_authorizer.should include('attribute_if')
   end
   
@@ -33,19 +33,19 @@ describe AttributeExt::HiddenAttributes do
     user = User.new
     user.mass_assignment_authorizer.should_not include('attribute_unless')
     
-    user = User.new :unless => false
+    user = User.new :opts => { :unless => false }
     user.mass_assignment_authorizer.should include('attribute_unless')
   end
   
   it 'can whitelist attributes using an if and an unless condition' do
     user = User.new
     user.mass_assignment_authorizer.should_not include('attribute_if_unless')
-    user = User.new :if => true
+    user = User.new :opts => { :if => true }
     user.mass_assignment_authorizer.should_not include('attribute_if_unless')
-    user = User.new :unless => false
+    user = User.new :opts => { :unless => false }
     user.mass_assignment_authorizer.should_not include('attribute_if_unless')
     
-    user = User.new :if => true, :unless => false
+    user = User.new :opts => { :if => true, :unless => false }
     user.mass_assignment_authorizer.should include('attribute_if_unless')
   end
   
