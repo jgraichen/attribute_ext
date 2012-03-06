@@ -97,12 +97,22 @@ module AttributeExt
     end
 
     def mass_assignment_authorizer_with_safe_attrs(role = nil) # :nodoc:
-      if role.nil? 
-        attrs = mass_assignment_authorizer_without_safe_attrs +
-          safe_attribute_names
+      safe_attributes_authorizer role
+    end
+
+    def safe_attributes_authorizer(role = nil)
+      if AttributeExt.activemodel_3_0?
+        attrs      = safe_attribute_names
+        authorizer = mass_assignment_authorizer_without_safe_attrs
       else
-        attrs = mass_assignment_authorizer_without_safe_attrs(role) +
-          safe_attribute_names(role)
+        attrs      = safe_attribute_names(role)
+        authorizer = mass_assignment_authorizer_without_safe_attrs(role)
+      end
+
+      if authorizer.kind_of?(::ActiveModel::MassAssignmentSecurity::WhiteList)
+        return authorizer + attrs
+      else
+        return ::ActiveModel::MassAssignmentSecurity::WhiteList.new attrs
       end
     end
     

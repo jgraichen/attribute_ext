@@ -6,67 +6,72 @@ describe AttributeExt::SafeAttributes do
   it 'uses mass assignment authorizer' do
     user = User.new
     
-    user.mass_assignment_authorizer.should include('always_there')
+    user.safe_attributes_authorizer.should include('always')
+  end
+
+  it 'should support attr_accessible' do
+    user = User.new
+    user.safe_attributes_authorizer.should include('opts')
   end
   
   it 'uses mass assignment authorizer with role' do
     user = User.new
     
-    user.mass_assignment_authorizer(:admin).should include('admin_role')
+    user.safe_attributes_authorizer(:admin).should include('admin_role')
   end
   
   it 'can whitelist attributes' do
     user = User.new
     
-    user.mass_assignment_authorizer.should include('always')
+    user.safe_attributes_authorizer.should include('always')
   end
   
   it 'can whitelist attributes using an if condition' do
     user = User.new
-    user.mass_assignment_authorizer.should_not include('attribute_if')
+    user.safe_attributes_authorizer.should_not include('attribute_if')
     
     user = User.new :opts => { :if => true }
-    user.mass_assignment_authorizer.should include('attribute_if')
+    user.safe_attributes_authorizer.should include('attribute_if')
   end
   
   it 'can whitelist attributes using an unless condition' do
     user = User.new
-    user.mass_assignment_authorizer.should_not include('attribute_unless')
+    user.safe_attributes_authorizer.should_not include('attribute_unless')
     
     user = User.new :opts => { :unless => false }
-    user.mass_assignment_authorizer.should include('attribute_unless')
+    user.safe_attributes_authorizer.should include('attribute_unless')
   end
   
   it 'can whitelist attributes using an if and an unless condition' do
     user = User.new
-    user.mass_assignment_authorizer.should_not include('attribute_if_unless')
+    user.safe_attributes_authorizer.should_not include('attribute_if_unless')
     user = User.new :opts => { :if => true }
-    user.mass_assignment_authorizer.should_not include('attribute_if_unless')
+    user.safe_attributes_authorizer.should_not include('attribute_if_unless')
     user = User.new :opts => { :unless => false }
-    user.mass_assignment_authorizer.should_not include('attribute_if_unless')
+    user.safe_attributes_authorizer.should_not include('attribute_if_unless')
     
     user = User.new :opts => { :if => true, :unless => false }
-    user.mass_assignment_authorizer.should include('attribute_if_unless')
+    user.safe_attributes_authorizer.should include('attribute_if_unless')
   end
   
   it 'can whitelist attributes checking role in if condition' do
     user = User.new
-    user.mass_assignment_authorizer(:default).should_not include('attribute_if_admin')
+    user.safe_attributes_authorizer(:default).should_not include('attribute_if_admin')
     user = User.new
-    user.mass_assignment_authorizer(:admin).should include('attribute_if_admin')
+    user.safe_attributes_authorizer(:admin).should include('attribute_if_admin')
   end
   
   it 'can whitelist attributes checking role in unless condition' do
     user = User.new
-    user.mass_assignment_authorizer(:default).should include('attribute_unless_admin')
+    user.safe_attributes_authorizer(:default).should include('attribute_unless_admin')
     user = User.new
-    user.mass_assignment_authorizer(:admin).should_not include('attribute_unless_admin')
+    user.safe_attributes_authorizer(:admin).should_not include('attribute_unless_admin')
   end
   
   it 'can provide a global default role' do
     AttributeExt::SafeAttributes.default_role = :new_default
     AttributeExt::SafeAttributes.default_role.should == :new_default
-    User.new.mass_assignment_authorizer.should include("new_default")
+    User.new.safe_attributes_authorizer.should include("new_default")
   end
   
   context '#role_mapper' do
@@ -106,17 +111,17 @@ describe AttributeExt::SafeAttributes do
         [:guest, :user, :admin].include?(role) ? role : :guest
       end
       
-      User.new.mass_assignment_authorizer.should include('role_mapper_guest')
-      User.new.mass_assignment_authorizer.should_not include('role_mapper_user')
-      User.new.mass_assignment_authorizer.should_not include('role_mapper_admin')
+      User.new.safe_attributes_authorizer.should include('role_mapper_guest')
+      User.new.safe_attributes_authorizer.should_not include('role_mapper_user')
+      User.new.safe_attributes_authorizer.should_not include('role_mapper_admin')
       
-      User.new.mass_assignment_authorizer(:user).should_not include('role_mapper_guest')
-      User.new.mass_assignment_authorizer(:user).should include('role_mapper_user')
-      User.new.mass_assignment_authorizer(:user).should_not include('role_mapper_admin')
+      User.new.safe_attributes_authorizer(:user).should_not include('role_mapper_guest')
+      User.new.safe_attributes_authorizer(:user).should include('role_mapper_user')
+      User.new.safe_attributes_authorizer(:user).should_not include('role_mapper_admin')
       
-      User.new.mass_assignment_authorizer(:admin).should_not include('role_mapper_guest')
-      User.new.mass_assignment_authorizer(:admin).should_not include('role_mapper_user')
-      User.new.mass_assignment_authorizer(:admin).should include('role_mapper_admin')
+      User.new.safe_attributes_authorizer(:admin).should_not include('role_mapper_guest')
+      User.new.safe_attributes_authorizer(:admin).should_not include('role_mapper_user')
+      User.new.safe_attributes_authorizer(:admin).should include('role_mapper_admin')
     end
   end
 end
