@@ -90,8 +90,8 @@ module AttributeExt
       def safe_attributes_opts(options)
         opts = { :as => [] }
         opts[:as]    += options[:as].is_a?(Array) ? options[:as] : [options[:as]] if options[:as]
-        opts[:if]     = options[:if] if options[:if].is_a?(Proc)
-        opts[:unless] = options[:unless] if options[:unless].is_a?(Proc)
+        opts[:if]     = options[:if] if options[:if].is_a?(Proc) or options[:if].is_a?(Symbol)
+        opts[:unless] = options[:unless] if options[:unless].is_a?(Proc) or options[:unless].is_a?(Symbol)
         opts
       end
     end
@@ -137,8 +137,8 @@ module AttributeExt
       names = []
       self.class.safe_attributes.collect do |attrs, options|
         next unless options[:as].empty? or options[:as].include?(role)
-        next unless options[:if].nil? or safe_attrs_call_block(options[:if], role)
-        next unless options[:unless].nil? or !safe_attrs_call_block(options[:unless], role)
+        next unless options[:if].nil? or safe_attrs_call(options[:if], role)
+        next unless options[:unless].nil? or !safe_attrs_call(options[:unless], role)
 
         names += attrs.collect(&:to_s)
       end
@@ -146,6 +146,11 @@ module AttributeExt
     end
     
     private
+    def safe_attrs_call(block_or_sym, role)
+      return safe_attrs_call_block(block_or_sym, role) if block_or_sym.is_a?(Proc)
+      return self.send block_or_sym
+    end
+
     def safe_attrs_call_block(block, role)
       case block.arity
       when 0
