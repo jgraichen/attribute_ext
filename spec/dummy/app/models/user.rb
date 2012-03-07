@@ -41,11 +41,14 @@ class User < ActiveRecord::Base
   safe_attributes :admin_role, :as => :admin
   safe_attributes :attribute_if, 
     :if => Proc.new { |user| user.opts[:if] }
+  safe_attributes :attribute_if_2, :if => :if?
   safe_attributes :attribute_unless, 
     :unless => Proc.new { |user| user.opts[:unless] }
+  safe_attributes :attribute_unless_2, :unless => :unless?
   safe_attributes :attribute_if_unless, 
     :if => Proc.new { |user| user.opts[:if] }, 
     :unless => Proc.new { |user| user.opts[:unless] }
+  safe_attributes :attribute_if_unless_2, :if => :if?, :unless => :unless?
   safe_attributes :attribute_if_admin,
     :if => Proc.new { |user,role| role == :admin}
   safe_attributes :attribute_unless_admin,
@@ -58,5 +61,13 @@ class User < ActiveRecord::Base
   def opts
     @opts ||= {}
     @opts.reverse_merge :if => false, :unless => true
+  end
+
+  def if?
+    opts[:if]
+  end
+
+  def unless?
+    opts[:unless]
   end
 end

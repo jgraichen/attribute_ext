@@ -26,7 +26,7 @@ describe AttributeExt::SafeAttributes do
     user.safe_attributes_authorizer.should include('always')
   end
   
-  it 'can whitelist attributes using an if condition' do
+  it 'can whitelist attributes using an if condition with proc' do
     user = User.new
     user.safe_attributes_authorizer.should_not include('attribute_if')
     
@@ -34,7 +34,15 @@ describe AttributeExt::SafeAttributes do
     user.safe_attributes_authorizer.should include('attribute_if')
   end
   
-  it 'can whitelist attributes using an unless condition' do
+  it 'can whitelist attributes using an if condition with symbol' do
+    user = User.new
+    user.safe_attributes_authorizer.should_not include('attribute_if_2')
+    
+    user = User.new :opts => { :if => true }
+    user.safe_attributes_authorizer.should include('attribute_if_2')
+  end
+  
+  it 'can whitelist attributes using an unless condition with proc' do
     user = User.new
     user.safe_attributes_authorizer.should_not include('attribute_unless')
     
@@ -42,7 +50,15 @@ describe AttributeExt::SafeAttributes do
     user.safe_attributes_authorizer.should include('attribute_unless')
   end
   
-  it 'can whitelist attributes using an if and an unless condition' do
+  it 'can whitelist attributes using an unless condition with symbol' do
+    user = User.new
+    user.safe_attributes_authorizer.should_not include('attribute_unless_2')
+    
+    user = User.new :opts => { :unless => false }
+    user.safe_attributes_authorizer.should include('attribute_unless_2')
+  end
+  
+  it 'can whitelist attributes using an if and an unless condition with proc' do
     user = User.new
     user.safe_attributes_authorizer.should_not include('attribute_if_unless')
     user = User.new :opts => { :if => true }
@@ -52,6 +68,18 @@ describe AttributeExt::SafeAttributes do
     
     user = User.new :opts => { :if => true, :unless => false }
     user.safe_attributes_authorizer.should include('attribute_if_unless')
+  end
+  
+  it 'can whitelist attributes using an if and an unless condition with symbol' do
+    user = User.new
+    user.safe_attributes_authorizer.should_not include('attribute_if_unless_2')
+    user = User.new :opts => { :if => true }
+    user.safe_attributes_authorizer.should_not include('attribute_if_unless_2')
+    user = User.new :opts => { :unless => false }
+    user.safe_attributes_authorizer.should_not include('attribute_if_unless_2')
+    
+    user = User.new :opts => { :if => true, :unless => false }
+    user.safe_attributes_authorizer.should include('attribute_if_unless_2')
   end
   
   it 'can whitelist attributes checking role in if condition' do
