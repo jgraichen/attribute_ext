@@ -11,7 +11,7 @@ Install
 
 Just add the following to your Gemfile
 
-	gem 'attribute_ext'
+	gem 'attribute_ext', '~> 1.4'
 	
 and run `bundle` command.
 
@@ -43,8 +43,12 @@ user is an admin.
 Message text can not be mass assigned when post is locked.
 
 	class Message < ActiveRecord::Base
-	  safe_attributes :text, :unless => Proc.new { |msg| msg.locked? }
+	  safe_attributes :text, :unless => :locked?
+	  safe_attributes :body, :unless => Proc.new { |msg| msg.locked? }
 	end
+
+Symbol conditions will be send to current model object with no arguments.
+The two lines above are equivalent.
 	
 With Rails 3 a role can be given when creating or updating an model. This 
 role will also be available in SafeAttributes.
